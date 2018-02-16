@@ -1,6 +1,6 @@
 {
   "name": "webpack-stylish",
-  "version": "1.0.0",
+  "version": "0.1.0",
   "description": "A stylish reporter for webpack",
   "license": "MIT",
   "repository": "webpack/webpack-stylish",
@@ -34,7 +34,8 @@
     "plur": "^2.1.2",
     "pretty-bytes": "^4.0.2",
     "strip-ansi": "^4.0.0",
-    "text-table": "^0.2.0"
+    "text-table": "^0.2.0",
+    "wordwrap": "^1.0.0"
   },
   "devDependencies": {
     "codecov": "^3.0.0",
@@ -44,7 +45,7 @@
     "execa": "^0.9.0",
     "mocha": "^5.0.0",
     "nyc": "^11.4.1",
-    "webpack": "^3.10.0",
+    "webpack": "^3.11.0",
     "webpack-log": "^1.1.2"
   }
 }

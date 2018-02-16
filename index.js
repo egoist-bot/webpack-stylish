@@ -18,10 +18,18 @@ compiler.run((err, stats) => {
     exclude: ['node_modules', 'bower_components', 'components']
   };
 
+  // TODO: test multi compiler
+
   const json = stats.toJson(opts, true);
+
+  // errors and warnings go first, to make sure the counts are correct for
+  // modules
+  const problems = style.problems(parse.problems(json));
+
   const files = style.files(parse.files(json), compiler.options);
   const hidden = style.hidden(parse.hidden(json));
   const time = style.time(json.time);
+
   const { hash, version } = json;
 
   log(chalk`
@@ -30,8 +38,8 @@ compiler.run((err, stats) => {
 {underline ${hash}}
 ${files}
 
-  {gray Δ{italic t}} ${time} ${hidden}`);
+  {gray Δ{italic t}} ${time} ${hidden}
+
+${problems}
+  `);
 });
-
-
-// asset.isOverSizeLimit !
