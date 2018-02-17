@@ -5,3 +5,5 @@ coverage
 coverage.lcov
 npm-debug.log
 test/fixture/output.*
+test/fixture/client
+test/fixture/server

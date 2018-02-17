@@ -2,6 +2,7 @@
 
 const path = require('path');
 const webpack = require('webpack');
+const StylishReporter = require('../../index');
 
 module.exports = {
   // mode: 'development',x
@@ -13,7 +14,8 @@ module.exports = {
     path: path.resolve(__dirname)
   },
   plugins: [
-    new webpack.NamedModulesPlugin()
+    new webpack.NamedModulesPlugin(),
+    new StylishReporter()
   ],
-  stats: 'normal'
+  stats: 'none'
 };

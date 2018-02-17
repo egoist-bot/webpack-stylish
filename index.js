@@ -1,45 +1,71 @@
 'use strict';
 
 const chalk = require('chalk');
-const webpack = require('webpack');
 const parse = require('./lib/parse');
 const style = require('./lib/style');
-const config = require('./test/fixture/webpack.config.js');
 
-const { log } = console;
+module.exports = class StylishReporter {
+  constructor() {
+    this.rendered = {
+      header: false
+    };
 
-const compiler = webpack(config);
+    this.state = { active: 0, instances: 0, time: 0 };
+  }
 
-compiler.run((err, stats) => {
-  const opts = {
-    context: '/Users/powella/code/webpack-stylish/test/fixture',
-    cached: false,
-    cachedAssets: false,
-    exclude: ['node_modules', 'bower_components', 'components']
-  };
+  apply(compiler) {
+    const { rendered, state } = this;
 
-  // TODO: test multi compiler
+    state.active += 1;
+    state.instances += 1;
 
-  const json = stats.toJson(opts, true);
+    function render(stats) {
+      const opts = {
+        context: '/Users/powella/code/webpack-stylish/test/fixture',
+        cached: false,
+        cachedAssets: false,
+        exclude: ['node_modules', 'bower_components', 'components']
+      };
 
-  // errors and warnings go first, to make sure the counts are correct for
-  // modules
-  const problems = style.problems(parse.problems(json));
+      // TODO: test multi compiler
 
-  const files = style.files(parse.files(json), compiler.options);
-  const hidden = style.hidden(parse.hidden(json));
-  const time = style.time(json.time);
+      const json = stats.toJson(opts, true);
+      state.time += json.time;
 
-  const { hash, version } = json;
+      // errors and warnings go first, to make sure the counts are correct for modules
+      const problems = style.problems(parse.problems(json));
+      const files = style.files(parse.files(json), compiler.options);
+      const hidden = style.hidden(parse.hidden(json));
+      const hash = style.hash(json, files, hidden);
 
-  log(chalk`
-{cyan webpack v${version}}
+      const { version } = json;
+      const log = [];
 
-{underline ${hash}}
-${files}
+      if (!rendered.header) {
+        rendered.header = true;
+        log.push(chalk.cyan(`webpack v${version}\n`));
+      }
 
-  {gray Δ{italic t}} ${time} ${hidden}
+      log.push(hash);
+      log.push(problems);
 
-${problems}
-  `);
-});
+      state.active -= 1;
+
+      if (state.active === 0) {
+        const footer = style.footer(parse.footer(state));
+        rendered.footer = true;
+        log.push(footer);
+      }
+
+      console.log(log.join('\n')); // eslint-disable-line no-console
+    }
+
+    compiler.options.stats = 'none';
+
+    if (compiler.hooks) {
+      compiler.hooks.done.tap('webpack-stylish', render);
+    } else {
+      compiler.plugin('done', render);
+    }
+  }
+};
