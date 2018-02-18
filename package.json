@@ -7,7 +7,6 @@
   "author": "Andrew Powell <andrew@shellscape.org>",
   "homepage": "https://github.com/webpack/webpack-stylish",
   "main": "index.js",
-  "bin": "cli.js",
   "engines": {
     "node": ">=6"
   },
